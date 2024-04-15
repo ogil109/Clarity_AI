@@ -4,7 +4,7 @@ version = "1.0"
 description = "Solution for Clarity AI challenge by Oscar Gil Balaguer."
 authors = ["Óscar Gil Balaguer <hello@oscargilbalaguer.com>"]
 readme = "README.md"
-packages = [{include = "clarity_ai challenge solution"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

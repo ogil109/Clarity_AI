@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime, timezone
 
 
@@ -14,9 +15,9 @@ def parse_log_line(line):
     tuple: Containing ISO timestamp (datetime), host_from (str), and host_to (str).
     """
     parts = line.strip().split()
-    timestamp = datetime.fromtimestamp(int(parts[0]), timezone.utc).isoformat(
-        timespec="seconds"
-    )
+    timestamp = datetime.fromtimestamp(
+        int(parts[0]) / 1000, timezone.utc
+    )  # UNIX timestamp in ms, so divide by 1000.
     host_from, host_to = parts[1], parts[2]
     return timestamp, host_from, host_to
 
@@ -31,15 +32,21 @@ def process_logs(filename) -> list:
     Returns:
     list: A list of tuples containing timestamp (datetime), host_from (str), and host_to (str).
     """
-    with open(filename, "r", encoding="utf-8") as file:
-        lines = []
-        for line in file:
-            timestamp, host_from, host_to = parse_log_line(line)
-            lines.append((timestamp, host_from, host_to))
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            lines = []
+            for line in file:
+                timestamp, host_from, host_to = parse_log_line(line)
+                lines.append((timestamp, host_from, host_to))
 
-    # Built-in Timsort is fast enough in nearly sorted lists (using insertion sort).
-    lines.sort(key=lambda x: x[0])
-    return lines
+        lines.sort(key=lambda x: x[0])
+        return lines
+    except FileNotFoundError:
+        print("File not found.")
+        sys.exit(1)
+    except IOError:
+        print("Error reading file.")
+        sys.exit(1)
 
 
 def find_logs(logs, host, start_time, end_time) -> list:
@@ -62,15 +69,14 @@ def find_logs(logs, host, start_time, end_time) -> list:
         if start_time <= timestamp <= end_time
     ]
 
-    # Avoid duplicates using set.
-    connected_hosts = set()
+    connected_hosts = []
 
     for timestamp, host_from, host_to in filtered_logs:
         if start_time <= timestamp <= end_time:
             # Manage bidirectional connections requirement.
             if host_from == host:
-                connected_hosts.add(host_to)
+                connected_hosts.append(host_to)
             elif host_to == host:
-                connected_hosts.add(host_from)
+                connected_hosts.append(host_from)
 
     return list(connected_hosts)
