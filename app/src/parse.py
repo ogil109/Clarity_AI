@@ -69,14 +69,14 @@ def find_logs(logs, host, start_time, end_time) -> list:
         if start_time <= timestamp <= end_time
     ]
 
-    connected_hosts = []
+    connected_hosts = set()
 
     for timestamp, host_from, host_to in filtered_logs:
         if start_time <= timestamp <= end_time:
             # Manage bidirectional connections requirement.
             if host_from == host:
-                connected_hosts.append(host_to)
+                connected_hosts.add(host_to)
             elif host_to == host:
-                connected_hosts.append(host_from)
+                connected_hosts.add(host_from)
 
     return list(connected_hosts)
