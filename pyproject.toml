@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "clarity-ai challenge solution-"
+version = "1.0"
+description = "Solution for Clarity AI challenge by Oscar Gil Balaguer."
+authors = ["Óscar Gil Balaguer <hello@oscargilbalaguer.com>"]
+readme = "README.md"
+packages = [{include = "clarity_ai challenge solution"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
