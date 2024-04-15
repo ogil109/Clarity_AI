@@ -2,17 +2,15 @@ import sys
 from datetime import datetime, timezone
 
 
-def parse_log_line(line):
+def parse_log_line(line) -> tuple[datetime, str, str]:
     """
-    A function to parse a log line and extract timestamp, host_from, and host_to.
-
-    UNIX timestamp is parsed to ISO format to match CLI args.
+    Parses a log line and extracts the timestamp, host_from, and host_to information.
 
     Parameters:
-    line (str): The log line to be parsed.
+    line (str): A string representing a log line.
 
     Returns:
-    tuple: Containing ISO timestamp (datetime), host_from (str), and host_to (str).
+    tuple: Containing extracted timestamp (datetime), host_from (str), and host_to (str).
     """
     parts = line.strip().split()
     timestamp = datetime.fromtimestamp(
@@ -22,23 +20,26 @@ def parse_log_line(line):
     return timestamp, host_from, host_to
 
 
-def process_logs(filename) -> list:
+def process_logs(pathname) -> list:
     """
-    A function to process logs from a file, extract timestamp, host_from, and host_to, sort them, and return the sorted list.
+    Processes log entries from a specified file.
+
+    Opens the file, reads and parses each line, builds a list of tuples and sorts it based on timestamp.
 
     Parameters:
-    filename (str): The name of the file to process.
+    filename (str): The name of the file containing log entries.
 
     Returns:
-    list: A list of tuples containing timestamp (datetime), host_from (str), and host_to (str).
+    list: A list of tuples, each containing timestamp, host_from, and host_to from the log file.
     """
     try:
-        with open(filename, "r", encoding="utf-8") as file:
+        with open(pathname, "r", encoding="utf-8") as file:
             lines = []
             for line in file:
                 timestamp, host_from, host_to = parse_log_line(line)
                 lines.append((timestamp, host_from, host_to))
 
+        # Sort by parsed datetime (ISO format).
         lines.sort(key=lambda x: x[0])
         return lines
     except FileNotFoundError:
@@ -51,32 +52,32 @@ def process_logs(filename) -> list:
 
 def find_logs(logs, host, start_time, end_time) -> list:
     """
-    A function to find connected hosts within a specified time range for a given host.
+    Filters logs based on timestamps and avoids duplicates for bidirectional connections.
 
     Parameters:
-    logs (list): A list of tuples containing timestamp, host_from, and host_to.
-    host (str): The host for which connections need to be found.
-    start_time (datetime): The start time of the range to consider.
-    end_time (datetime): The end time of the range to consider.
+    logs (list): List of tuples containing timestamp, host_from, and host_to.
+    host (str): The host to find connections for.
+    start_time (datetime): The start timestamp to filter logs.
+    end_time (datetime): The end timestamp to filter logs.
 
     Returns:
-    list: A list of connected hosts within the specified time range for the given host.
+    list: List of connected hosts to the specified host.
     """
-    # Filter logs based on the start and end timestamps before iteration.
+    # Filter logs based on the start and end timestamps before iteration (to reduce list size).
     filtered_logs = [
-        (timestamp, host_from, host_to)
+        (host_from, host_to)
         for timestamp, host_from, host_to in logs
         if start_time <= timestamp <= end_time
     ]
 
+    # Avoid duplicates by using a set.
     connected_hosts = set()
 
-    for timestamp, host_from, host_to in filtered_logs:
-        if start_time <= timestamp <= end_time:
-            # Manage bidirectional connections requirement.
-            if host_from == host:
-                connected_hosts.add(host_to)
-            elif host_to == host:
-                connected_hosts.add(host_from)
+    for host_from, host_to in filtered_logs:
+        # Manage bidirectional connections requirement.
+        if host_from == host:
+            connected_hosts.add(host_to)
+        elif host_to == host:
+            connected_hosts.add(host_from)
 
     return list(connected_hosts)

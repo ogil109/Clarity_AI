@@ -1,14 +1,19 @@
 [tool.poetry]
-name = "clarity-ai challenge solution-"
+name = "clarity-ai challenge solution"
 version = "1.0"
 description = "Solution for Clarity AI challenge by Oscar Gil Balaguer."
 authors = ["Óscar Gil Balaguer <hello@oscargilbalaguer.com>"]
 readme = "README.md"
-packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+pytest = "^8.1.1"
+black = "^24.4.0"
+isort = "^5.13.2"
+pylint = "^3.1.0"
 
+[tool.pytest.ini_options]
+pythonpath = ["app"]
 
 [build-system]
 requires = ["poetry-core"]

@@ -10,6 +10,9 @@ def valid_datetime(s: str) -> datetime:
 
 
 def parse_args() -> argparse.Namespace:
+    """
+    Defines arguments for filename, start_datetime, end_datetime, and hostname. Accepts strings.
+    """
     parser = argparse.ArgumentParser(description="Log Parser Tool")
     parser.add_argument(
         "filename", type=str, help="The absolute path to the log file to parse"
@@ -34,7 +37,9 @@ def main() -> None:
         args.filename
     )  # logs is a sorted list of tuples (timestamp, host_from, host_to)
     connections = find_logs(logs, args.hostname, args.start_datetime, args.end_datetime)
-    print(f"Connections to/from {args.hostname}:\n")
+    print(
+        f"\nConnections to/from {args.hostname} between {args.start_datetime} and {args.end_datetime}:\n"
+    )
     for connection in connections:
         print(connection)
 
