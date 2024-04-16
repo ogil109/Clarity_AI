@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+# src included in path at pyproject.toml (see [tool.pytest.ini_options])
 from parse import find_logs, parse_log_line, process_logs
 
 

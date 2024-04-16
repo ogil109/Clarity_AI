@@ -1,7 +1,6 @@
 import argparse
 from datetime import datetime, timezone
 
-# src included in path at pyproject.toml (see [tool.pytest.ini_options])
 from parse import find_logs, process_logs
 
 
@@ -15,7 +14,7 @@ def valid_datetime(s: str) -> datetime:
 
 def parse_args() -> argparse.Namespace:
     """
-    Defines arguments for filename, start_datetime, end_datetime, and hostname. Accepts strings.
+    Defines arguments for filename, start_datetime, end_datetime, and hostname. Accepts strings and parses timestamp with valid datetime().
     """
     parser = argparse.ArgumentParser(description="Log Parser Tool")
     parser.add_argument(
@@ -52,9 +51,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    logs = process_logs(
-        args.filename
-    )  # logs is a sorted list of tuples (timestamp, host_from, host_to)
+    logs = process_logs(args.filename)
     connections = find_logs(logs, args.hostname, args.start_datetime, args.end_datetime)
     print(
         f"\nConnections to/from {args.hostname} between {args.start_datetime} and {args.end_datetime}:\n"

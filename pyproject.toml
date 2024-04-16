@@ -11,6 +11,8 @@ pytest = "^8.1.1"
 black = "^24.4.0"
 isort = "^5.13.2"
 pylint = "^3.1.0"
+sortedcontainers = "^2.4.0"
+asyncio = "^3.4.3"
 
 [tool.pytest.ini_options]
 pythonpath = "app/src"
