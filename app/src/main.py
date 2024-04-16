@@ -1,12 +1,16 @@
 import argparse
 from datetime import datetime, timezone
 
+# src included in path at pyproject.toml (see [tool.pytest.ini_options])
 from parse import find_logs, process_logs
 
 
 def valid_datetime(s: str) -> datetime:
-    """Returns a valid, timezone aware datetime object from a string."""
-    return datetime.fromisoformat(s).replace(tzinfo=timezone.utc)
+    """Returns a valid, timezone aware datetime object from a string (ISO format)."""
+    try:
+        return datetime.fromisoformat(s).replace(tzinfo=timezone.utc)
+    except ValueError as e:
+        raise ValueError(f"Invalid datetime format: {s}") from e
 
 
 def parse_args() -> argparse.Namespace:
@@ -15,7 +19,9 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description="Log Parser Tool")
     parser.add_argument(
-        "filename", type=str, help="The absolute path to the log file to parse"
+        "filename",
+        type=str,
+        help="The absolute path to the log file to parse",
     )
     parser.add_argument(
         "start_datetime",
@@ -28,7 +34,20 @@ def parse_args() -> argparse.Namespace:
         help="End datetime in ISO format (e.g., 2021-01-01T01:00:00.000Z)",
     )
     parser.add_argument("hostname", type=str, help="Hostname to find connections for")
-    return parser.parse_args()
+
+    # Handle invalid input
+    args = None
+    while args is None:
+        try:
+            args = parser.parse_args()
+        except TypeError as e:
+            args = None
+            raise TypeError("Invalid input. Please try again.") from e
+
+    if not any(vars(args)):
+        raise SystemExit("No arguments provided. Exiting.")
+
+    return args
 
 
 def main() -> None:

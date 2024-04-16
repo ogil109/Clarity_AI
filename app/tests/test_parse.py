@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
-# Path modified to allow for importing src.parse at pyproject.toml
-from src.parse import find_logs, parse_log_line, process_logs
+from parse import find_logs, parse_log_line, process_logs
 
 
 def test_parse_log_line():
