@@ -5,7 +5,7 @@ Given the name of a file, an init_datetime, an end_datetime, and a Hostname, ret
 ## Usage
 
 ```bash
-python main.py "pathname" "ISO datetime" "ISO datetime" "hostname"
+python app/src/main.py "pathname" "ISO datetime" "ISO datetime" "hostname"
 ```
 ### Example
 
